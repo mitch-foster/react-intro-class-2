@@ -16,6 +16,8 @@ class Calculator extends Component {
         }
         this.updateHeader = this.updateHeader.bind(this);
         this.setDisplay = this.setDisplay.bind(this);
+        this.calculate = this.calculate.bind(this);
+        this.clearDisplay = this.clearDisplay.bind(this);
 
     }
 
@@ -26,10 +28,56 @@ class Calculator extends Component {
     }
 
     setDisplay(num){
+        var display = ( this.state.display === '0' ) ? num : this.state.display + num;
         this.setState({
-            display: this.state.display + num,
+            display: (this.state.display.length < 13) ? display : this.state.display
+        })
+        
+    }
+
+    setOperator(operator){
+        if(!this.state.operator){
+            this.setState({
+                operator: operator,
+                temp: parseInt(this.state.display, 10),
+                display: '0'
+            })
+        }
+    }
+
+    calculate() {
+        if ( this.state.operator === '' ) { return; }
+        var result;
+
+        switch ( this.state.operator ) {
+            case '+':
+            result = this.state.temp + parseInt(this.state.display, 10);
+            break;
+            case '-':
+            result = this.state.temp - parseInt(this.state.display, 10);
+            break;
+            case '*':
+            result = this.state.temp * parseInt(this.state.display, 10);
+            break;
+            case '/':
+            result = this.state.temp / parseInt(this.state.display, 10);
+            break;
+            default:
+            break;
+        }
+
+        this.setState({ display: String(result) });
+    }
+
+    clearDisplay(){
+        this.setState({
+            display: '0',
+            operator: '',
+            temp: 0,
+            resetDisplay: false
         })
     }
+
     render() {
         return (
             <div id="calculator-container">
@@ -41,7 +89,7 @@ class Calculator extends Component {
                             <span className="total">{this.state.display}</span>
                         </div>
 
-                        <div className="btn clear"></div>
+                        <div className="btn clear" onClick={this.clearDisplay}></div>
 
                         <div className="btn zero" onClick={ ()=> {this.setDisplay('0');} }></div>
                         <div className="btn one" onClick={ ()=> {this.setDisplay('1');} }></div>
@@ -54,11 +102,11 @@ class Calculator extends Component {
                         <div className="btn eight" onClick={ ()=> {this.setDisplay('8');} }></div>
                         <div className="btn nine" onClick={ ()=> {this.setDisplay('9');} }></div>
 
-                        <div className="btn equal"></div>
-                        <div className="btn multiply"></div>
-                        <div className="btn divide"></div>
-                        <div className="btn subtract"></div>
-                        <div className="btn add"></div>
+                        <div className="btn equal" onClick={this.calculate}></div>
+                        <div className="btn multiply" onClick={()=> { this.setOperator('*')} }></div>
+                        <div className="btn divide" onClick={()=> { this.setOperator('/')} }></div>
+                        <div className="btn subtract" onClick={()=> { this.setOperator('-')} }></div>
+                        <div className="btn add" onClick={()=> { this.setOperator('+')} }></div>
                 </div>
             </div>
         );
